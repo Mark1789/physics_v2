@@ -105,9 +105,9 @@ let enemy_obj = {
     let randomPane = coords_panes[Math.floor(Math.random() * panes.length)];
     this["enemy_pane"] = randomPane;
     enemy.style.top = randomPane.top - enemy.offsetHeight - area_coords.top - 1 + 'px';
-    enemy.style.left = randomPane.left + Math.floor(Math.random()*randomPane.width) - area_coords.left + 'px';
-    this["enemy_style_left"] =
-    randomPane.left - area_coords.left;
+    let random_left = randomPane.left + Math.floor(Math.random()*randomPane.width) - area_coords.left;
+    enemy.style.left = random_left + 'px';
+    this["enemy_style_left"] = random_left;
   },
   move: function (x) {
     enemy.style.left = this["enemy_style_left"] + 'px';
