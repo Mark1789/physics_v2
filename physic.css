@@ -17,6 +17,35 @@ body {
   background: lawngreen;
   border-radius: 10%;
   z-index: 1;
+  transform: scale(1,1);
+}
+.hero::before {
+  content: "";
+  display: block;
+  position: absolute;
+  right: 0px;
+  top: 4px;
+  width: 7px;
+  height: 4px;
+  background: orangered;
+}
+.arm {
+  position: absolute;
+  display: none;
+  top: 0px;
+  left: 15px;
+  width: 20px;
+  height: 20px;
+}
+.arm::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0px;
+  width: 13px;
+  height: 4px;
+  background: lawngreen;
+  border: 1px green solid;
 }
 .coin {
   position: absolute;
@@ -78,23 +107,28 @@ body {
 }
 .control {
   display: flex;
+  flex-wrap: wrap;
 }
-.left, .right, .jump {
+.left, .right, .jump, .shoot, .hit {
   border: 2px solid limegreen;
   width: 50px;
   height: 50px;
-  border-radius: 20%;
+  border-radius: 10px;
   font-size: 50px;
   text-align: center;
   margin: 10px;
   user-select: none;
 }
-.jump {
-  margin-left: 50px;
+.jump, .hit {
+  margin-left: auto;
+}
+.hit {
+  border-radius: 10px;
+  width: 125px;
 }
 .score_div {
   position: absolute;
   bottom: 0px;
   font-size: 20px;
   user-select: none;
-}
+  }
