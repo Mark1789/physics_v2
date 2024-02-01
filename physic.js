@@ -1,4 +1,3 @@
-//let coords = blk.getBoundingClientRect();
 // elements
 let area = document.querySelector(".area");
 let hero = document.querySelector(".hero");
@@ -8,6 +7,9 @@ let panes = document.querySelectorAll(".pane");
 let left = document.querySelector(".left");
 let right = document.querySelector(".right");
 let jump = document.querySelector(".jump");
+let shoot = document.querySelector(".shoot");
+let arm = document.querySelector(".arm");
+let hit = document.querySelector(".hit");
 let score = document.querySelector(".score");
 
 let area_coords = area.getBoundingClientRect();
@@ -29,10 +31,16 @@ let step = 1;
 let speed = 0;
 // высота поыжка
 let jump_height = 0;
+// shoot delay
+let shoot_delay = 0;
+// shoot directory
+let shoot_direct = true;
 // активатор control
 let hero_left = false;
 let hero_right = false;
 let hero_jump = false;
+let hero_shoot = false;
+
 
 
 // objects of coords panes, getBounding...
@@ -63,6 +71,19 @@ let hero_obj = {
   jump: function () {
     hero.style.top = hero_tumble + 'px';
     hero_tumble -= step;
+  },
+  hit: function () {
+    arm.style.display = 'block';
+    setTimeout(() => {
+      arm.style.display = 'none';
+    }, 200)
+    let arm_coords = arm.getBoundingClientRect();
+    let enemy_c = enemy.getBoundingClientRect();
+    
+    if ((arm_coords.top <= enemy_c.bottom && arm_coords.bottom >= enemy_c.top) && (arm_coords.left <= enemy_c.right && arm_coords.right >= enemy_c.left)) {
+       score.innerHTML = +score.innerHTML + 5;
+     enemy_obj.create();
+    }
   }
 }
 
@@ -75,7 +96,7 @@ let coin_obj = {
 }
 
 let enemy_obj = {
-  // начальная точка отсчета от платыормы
+  // начальная точка отсчета от платfормы
   enemy_style_left: 0,
   enemy_pane: null,
   // personal step
@@ -97,6 +118,49 @@ let enemy_obj = {
   }
 }
 
+let shoot_obj = {
+  create: function (hero, directory, enemy_c) {
+    let shot_style_left = 0;
+    let shot = document.createElement('div');
+    shot.style.cssText = 'position: absolute; width: 6px; height: 3px; background: orange; z-index: 1;';
+    area.insertAdjacentElement('afterbegin', shot);
+    shot.style.top = hero.top + 'px';
+    shot.style.left = hero.left + 'px';
+    shot_style_left = parseInt(shot.style.left);
+    
+    // fly shot
+    let shot_fly = setInterval(() => {
+      
+    let shot_coords = shot.getBoundingClientRect();
+
+      
+    shot.style.left = shot_style_left + 'px';
+    
+    // задаем директорию полета пули
+   if (directory) {
+    shot_style_left += (Math.random() * 10);
+    }
+     if (!directory) {
+    shot_style_left -= (Math.random() * 10);
+    }
+    
+    // определяем границы полета
+   if (shot_style_left > area_coords.right || shot_style_left < 0) {
+     clearInterval(shot_fly)
+     shot.remove()
+   }
+   
+   // проверка соприкосновения путэли с врагом
+   if ((shot_coords.top <= enemy_c.bottom && shot_coords.bottom > enemy_c.top) && (shot_coords.left <= enemy_c.right && shot_coords.right >= enemy_c.left)) {
+     clearInterval(shot_fly);
+     shot.remove();
+     score.innerHTML = +score.innerHTML + 2;
+     enemy_obj.create();
+   }
+    }, 1)
+  }
+}
+
 enemy_obj.create();
 coin_obj.create();
 
@@ -113,14 +177,26 @@ let process = setInterval(() => {
   }
   // move hero
   if (hero_left) {
-    hero_obj.left()
+    hero_obj.left();
+    hero.style.transform = 'scale(-1,1)';
+    shoot_direct = false;
   }
   if (hero_right) {
-    hero_obj.right()
+    hero_obj.right();
+    hero.style.transform = 'scale(1,1)';
+    shoot_direct = true;
+  }
+  // shoot hero
+  if (hero_shoot && (shoot_delay > 50)) {
+    shoot_obj.create(hero_coords, shoot_direct, enemy_coords)
+    shoot_delay = 0;
   }
   // move enemy
   enemy_obj.move(enemy_coords);
   
+  if (shoot_delay < 51) {
+  shoot_delay += 1;
+  }
   
   // проверка на столкновение с платформой
   for (let i = 0; i < panes.length; i += 1) {
@@ -162,23 +238,27 @@ let process = setInterval(() => {
   }
 }, speed)
 
-
+// move left
 left.addEventListener('touchstart', (event) =>  {
     event.preventDefault();
   hero_left = true;
 })
 left.addEventListener('touchend', () => {
+  event.preventDefault();
   hero_left = false;
 })
 
+// move right
 right.addEventListener('touchstart', (event) =>  {
      event.preventDefault();
   hero_right = true;
 })
 right.addEventListener('touchend', () => {
+  event.preventDefault();
   hero_right = false;
 })
 
+// jump
 jump.addEventListener('touchstart', (event) =>  {
        event.preventDefault();
   if (!hero_jump && !hero_tumble_check) {
@@ -186,3 +266,18 @@ jump.addEventListener('touchstart', (event) =>  {
   }
 })
 
+// fire
+shoot.addEventListener('touchstart', (event) =>  {
+  event.preventDefault();
+  hero_shoot = true;
+})
+shoot.addEventListener('touchend', () => {
+  event.preventDefault();
+  hero_shoot = false;
+})
+
+// hit
+hit.addEventListener('touchstart', (event) =>  {
+  event.preventDefault();
+  hero_obj.hit();
+})
