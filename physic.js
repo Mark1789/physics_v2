@@ -105,7 +105,7 @@ let enemy_obj = {
     let randomPane = coords_panes[Math.floor(Math.random() * panes.length)];
     this["enemy_pane"] = randomPane;
     enemy.style.top = randomPane.top - enemy.offsetHeight - area_coords.top - 1 + 'px';
-    let random_left = randomPane.left + Math.floor(Math.random()*randomPane.width) - area_coords.left;
+    let random_left = randomPane.left + Math.floor(Math.random()*(randomPane.width - enemy.offsetWidth)) - area_coords.left;
     enemy.style.left = random_left + 'px';
     this["enemy_style_left"] = random_left;
   },
@@ -170,6 +170,14 @@ let process = setInterval(() => {
   let coin_coords = coin.getBoundingClientRect();
   let enemy_coords = enemy.getBoundingClientRect();
 
+// border area left
+  if (hero_coords.left === area.offsetLeft) {
+    hero_left = false;
+  }
+  // border area right
+  if (hero_coords.right === area.offsetLeft + area.clientWidth) {
+    hero_right = false;
+  }
   
   // проверка на падение
   if (hero_tumble_check) {
