@@ -34,7 +34,7 @@ body {
   display: none;
   top: 0px;
   left: 15px;
-  width: 20px;
+  width: 23px;
   height: 20px;
 }
 .arm::before {
@@ -125,6 +125,7 @@ body {
 .hit {
   border-radius: 10px;
   width: 125px;
+  height: 100px;
 }
 .score_div {
   position: absolute;
